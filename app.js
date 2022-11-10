@@ -8,7 +8,7 @@ fs.readdir('./boys', (err, files) => {
 
                 let object = JSON.parse(data.toString())
 
-                if (object.gender === 'female'.trim()) {
+                if (object.gender.trim() === 'female') {
                     fs.rename(`./boys/${file}`, `./girls/${file}`, (err) => {
                         if (err) {
                             console.log('something went wrong')
@@ -28,7 +28,7 @@ fs.readdir('./girls', (err, files) => {
 
             let object = JSON.parse(data.toString())
 
-            if (object.gender === 'male'.trim()) {
+            if (object.gender.trim() === 'male'.trim()) {
                 fs.rename(`./girls/${file}`, `./boys/${file}`, (err) => {
                     if (err) {
                         console.log('something went wrong')
