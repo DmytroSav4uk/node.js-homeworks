@@ -1,41 +1,53 @@
-let fs = require('fs')
+const express = require('express');
+
+const userDb = require('./users/users');
+
+const app = express();
 
 
-fs.readdir('./boys', (err, files) => {
-
-    for (const file of files) {
-        fs.readFile(`./boys/${file}`, (err, data) => {
-
-                let object = JSON.parse(data.toString())
-
-                if (object.gender.trim() === 'female') {
-                    fs.rename(`./boys/${file}`, `./girls/${file}`, (err) => {
-                        if (err) {
-                            console.log('something went wrong')
-                        }
-                        console.log('Rename completed');
-                    });
-                }
-            }
-        )
-    }
+app.listen(5000, () => {
+    console.log('Server listen 5000');
 });
 
 
-fs.readdir('./girls', (err, files) => {
-    for (const file of files) {
-        fs.readFile(`./girls/${file}`, (err, data) => {
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-            let object = JSON.parse(data.toString())
+app.get('/users', (req, res) => {
+    console.log("users endpoint works");
+    res.json(userDb);
+})
 
-            if (object.gender.trim() === 'male'.trim()) {
-                fs.rename(`./girls/${file}`, `./boys/${file}`, (err) => {
-                    if (err) {
-                        console.log('something went wrong')
-                    }
-                    console.log('Rename completed');
-                });
-            }
-        })
-    }
+app.get('/users/:id', (req, res) => {
+    console.log(req.params);
+
+    const {id} = req.params;
+
+    res.json(userDb[id]);
 });
+
+
+app.post('/users', (req, res) => {
+    const userInfo = req.body;
+    userDb.push(userInfo);
+    res.status(201).json('Created')
+});
+
+
+app.delete('/users/:id', (req, res) => {
+    const id = req.params.id;
+    userDb.splice(id, 1)
+    res.send('Example removed');
+});
+
+
+app.put('/users/:id', (req, res) => {
+    const newUserInfo = req.body;
+    const id = req.params.id;
+    userDb[id] = newUserInfo;
+    res.json('Updated')
+});
+
+app.get('/', (req, res) => {
+    res.json('WELCOME')
+})
